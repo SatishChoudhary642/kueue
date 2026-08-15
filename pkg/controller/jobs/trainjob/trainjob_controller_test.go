@@ -247,6 +247,13 @@ func TestRunWithPodsetsInfo(t *testing.T) {
 					},
 					NodeSelector: map[string]string{"new-selector": "value"},
 				},
+				{
+					Name: "user-provided",
+					Labels: map[string]string{
+						constants.PodSetLabel: "user-provided",
+					},
+					NodeSelector: map[string]string{"disktype": "sdd"},
+				},
 			},
 			wantTrainJob: testTrainJob.Clone().
 				RuntimePatches([]kftrainerapi.RuntimePatch{
@@ -264,6 +271,10 @@ func TestRunWithPodsetsInfo(t *testing.T) {
 								PodAnnotation("test-annotation", "new-value").
 								PodLabel(constants.PodSetLabel, "node").
 								NodeSelector("new-selector", "value").
+								Obj(),
+							testingtrainjob.MakeReplicatedJobPatch("user-provided").
+								PodLabel(constants.PodSetLabel, "user-provided").
+								NodeSelector("disktype", "sdd").
 								Obj(),
 						).
 						Obj(),
